@@ -1,7 +1,7 @@
 pub const ZERO: u64 = 0;
 pub const BASE: u64 = 2;
 
-pub const VERYLOW: u64 = 3;
+pub const GAS_VERYLOW: u64 = 3;
 pub const DATA_LOADN_GAS: u64 = 3;
 
 pub const CONDITION_JUMP_GAS: u64 = 4;

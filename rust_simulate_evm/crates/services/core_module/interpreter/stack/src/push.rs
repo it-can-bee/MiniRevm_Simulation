@@ -1,8 +1,8 @@
 use lib_utils::error::RunnerError;
 use interpreter_execute::execute::Execute;
 
+pub const VERYLOW:u64 = 3;
 
-pub const VERYLOW: u64 = 3;
 
 //数据右对齐 计算偏移量
 fn prepare_data(data: &[u8]) -> [u8; 32] {

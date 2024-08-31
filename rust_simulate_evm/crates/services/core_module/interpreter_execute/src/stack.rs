@@ -1,5 +1,6 @@
 use lib_utils::error::RunnerError;
 pub const STACK_LIMIT:usize = 1024;
+
 #[derive(Debug)]
 pub struct Stack {
     /// The stack itself
@@ -32,7 +33,36 @@ impl Stack {
         Ok( self.stack.push(data_len) )
     }
 
-    // pub fn swap(&mut self, index: usize) -> Result<[[u8; 32]; 2], RunnerError> {
-    //
-    // }
+    pub fn swap(&mut self, index: usize) -> Result<[[u8; 32]; 2], RunnerError> {
+        let len = self.stack.len();
+        if index == 0 || index >= len {
+            return Err(RunnerError::StackTooSmall);
+        }
+        //swap for index with the topStack
+        self.stack.swap(len - 1, len -1 - index);
+        let new_top = self.stack[len - 1];
+        let old_top = self.stack[len - 1 - index];
+
+        Ok([new_top, old_top])
+    }
+
+    pub fn dup(&mut self, index: usize) -> Result<[u8; 32], RunnerError> {
+        if index == 0 || index > self.stack.len() {
+            return Err(RunnerError::StackTooSmall);
+        }
+        let idx = self.stack.len() - index;
+        let double = self.stack[idx];
+        self.stack.push(double);
+
+        Ok(double)
+    }
+}
+
+impl Clone for Stack {
+    /// Returns a new instance of `Stack` with the same elements as `self`.
+    fn clone(&self) -> Self {
+        Self {
+            stack: self.stack.clone(),
+        }
+    }
 }
