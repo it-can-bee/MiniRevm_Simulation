@@ -1,0 +1,17 @@
+[package]
+name = "rust_simulate_evm"
+version = "0.1.0"
+edition = "2021"
+license-file = "LICENSE"
+description = "An Ethereum Virtual Machine (EVM) simulator written in Rust that supports bytecode execution"
+authors = ["JeffyItWeb3 <zhangxucan2018@163.com>"]
+
+[dependencies]
+
+[workspace]
+members = [
+    "crates/libs/lib_core",  # 核心库 binary
+    "crates/libs/lib_utils",  # 工具库 binary
+    "crates/services/core_module/interpreter_execute", # 应用层 application
+    "crates/services/core_module/interpreter/stack"
+]
