@@ -1,3 +1,4 @@
+#[derive(Debug)]
 pub enum RunnerError {
     // Memory errors
     OutOfBoundsByteCode,
@@ -12,6 +13,7 @@ pub enum RunnerError {
     CodeNotFound,
     EmptyByteCode,
     InsufficientBalance,
+    OperationNotAllowed,
 
     // Flow errors
     StaticCallStateChanged,
