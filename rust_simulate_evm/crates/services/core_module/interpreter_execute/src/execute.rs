@@ -1,7 +1,9 @@
 use lib_utils::error::RunnerError;
-//use crate::modules::stack::Stack;
 use crate::stack::Stack;
+use crate::memory::Memory;
+use crate::storage::EvmState;
 
+#[derive(Debug)]
 pub struct Execute {
     //execute
     pub pc: usize,
@@ -9,9 +11,12 @@ pub struct Execute {
 
     // Environment
     pub gas: u64,
+    pub address: [u8; 20],
 
     //data
     pub stack:Stack,
+    pub memory: Memory,
+    pub state: EvmState,
 }
 
 impl Execute {
@@ -20,7 +25,10 @@ impl Execute {
             pc: 0,
             bytecode: Vec::new(),
             gas: 0,
+            address: [0u8; 20],
             stack: Stack::new(),
+            memory: Memory::new(None),
+            state: EvmState::new(None),
         }
     }
 

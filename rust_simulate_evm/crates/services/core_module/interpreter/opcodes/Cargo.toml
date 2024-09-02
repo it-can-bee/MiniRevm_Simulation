@@ -4,3 +4,8 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+ethers = "2.0.7"
+lib_utils = { path = "../../../../libs/lib_utils" }
+interpreter_execute = { path = "../../interpreter_execute" }
+gas = { path = "../gas" }
+lib_core = { path = "../../../../libs/lib_core" }

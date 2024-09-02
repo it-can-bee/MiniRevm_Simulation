@@ -1,9 +1,7 @@
 use lib_utils::error::RunnerError;
 pub const STACK_LIMIT:usize = 1024;
-
 #[derive(Debug)]
 pub struct Stack {
-    /// The stack itself
     pub stack: Vec<[u8; 32]>,
 }
 

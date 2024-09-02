@@ -1,7 +1,6 @@
 use lib_utils::error::RunnerError;
 use interpreter_execute::execute::Execute;
-
-pub const VERYLOW:u64 = 3;
+use gas::constant::{VERYLOW, VERYLOW_2};
 
 
 //数据右对齐 计算偏移量
@@ -13,21 +12,21 @@ fn prepare_data(data: &[u8]) -> [u8; 32] {
 }
 
 //从字节码中提取数据，并将其正确地放入栈中 数据32字节空间内右对齐
-pub fn push(executor: &mut Execute, data_len: usize) -> Result<(), RunnerError> {
-    if (executor.gas > VERYLOW) {
+pub fn push(execute: &mut Execute, data_len: usize) -> Result<(), RunnerError> {
+    if execute.gas > VERYLOW {
         return Err(RunnerError::OutOfGas)
     }
-    if executor.pc + 1 + data_len > executor.bytecode.len() {
+    if execute.pc + 1 + data_len > execute.bytecode.len() {
         return Err(RunnerError::OutOfBoundsByteCode);
     }
 
-    let data = &executor.bytecode[executor.pc + 1..executor.pc + 1 + data_len];
+    let data = &execute.bytecode[execute.pc + 1..execute.pc + 1 + data_len];
     let padded = prepare_data(data);
-    let result = executor.stack.push(padded);
+    let result = execute.stack.push(padded);
     if result.is_err() {
         return Err(result.unwrap_err());
     }
 
-    executor.increase_pc(1 + data_len)
+    execute.increase_pc(1 + data_len)
 
 }
