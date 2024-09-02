@@ -21,10 +21,6 @@ pub struct Log {
     pub data: Vec<u8>,
 }
 
-/// Implements the Debug trait for the Log struct, which allows for the struct to be printed in a formatted way.
-/// The function writes the address, topics, and data of the Log struct to the provided formatter.
-/// If the topics vector is not empty, it prints each topic in a formatted way.
-/// Otherwise, it prints "No topics".
 impl fmt::Debug for Log {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         writeln!(

@@ -1506,6 +1506,7 @@ dependencies = [
 name = "interpreter_execute"
 version = "0.1.0"
 dependencies = [
+ "bytes",
  "colored",
  "ethers",
  "lib_core",
@@ -1630,6 +1631,9 @@ name = "lib_core"
 version = "0.1.0"
 dependencies = [
  "colored",
+ "ethers",
+ "hex",
+ "primitive-types",
 ]
 
 [[package]]
@@ -1818,6 +1822,17 @@ name = "once_cell"
 version = "1.19.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3fdb12b2476b595f9358c5161aa467c2438859caa136dec86c26fdd2efe17b92"
+
+[[package]]
+name = "opcodes"
+version = "0.1.0"
+dependencies = [
+ "ethers",
+ "gas",
+ "interpreter_execute",
+ "lib_core",
+ "lib_utils",
+]
 
 [[package]]
 name = "open-fastrlp"

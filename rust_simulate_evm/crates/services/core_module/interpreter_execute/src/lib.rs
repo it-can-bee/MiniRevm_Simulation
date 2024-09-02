@@ -7,3 +7,5 @@ pub mod memory;
 pub mod storage;
 
 pub mod log;
+pub mod assembly;
+pub mod enviroment;

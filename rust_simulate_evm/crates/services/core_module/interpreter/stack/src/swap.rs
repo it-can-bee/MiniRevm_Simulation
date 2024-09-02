@@ -4,7 +4,7 @@ use gas::constant::VERYLOW;
 
 
 pub fn swap1(execute: &mut Execute) -> Result<(), RunnerError> {
-    if execute.gas > VERYLOW {
+    if execute.gas < VERYLOW {
         return Err(RunnerError::OutOfGas)
     }
 
@@ -18,7 +18,7 @@ pub fn swap1(execute: &mut Execute) -> Result<(), RunnerError> {
 }
 
 pub fn swap2(execute: &mut Execute) -> Result<(), RunnerError> {
-    if execute.gas > VERYLOW {
+    if execute.gas < VERYLOW {
         return Err(RunnerError::OutOfGas)
     }
     let result = execute.stack.swap(2);
@@ -32,7 +32,7 @@ pub fn swap2(execute: &mut Execute) -> Result<(), RunnerError> {
 }
 
 pub fn swap3(execute: &mut Execute) -> Result<(), RunnerError> {
-    if execute.gas > VERYLOW {
+    if execute.gas < VERYLOW {
         return Err(RunnerError::OutOfGas)
     }
     let result = execute.stack.swap(3);
@@ -46,7 +46,7 @@ pub fn swap3(execute: &mut Execute) -> Result<(), RunnerError> {
 }
 
 pub fn swap4(execute: &mut Execute) -> Result<(), RunnerError> {
-    if execute.gas > VERYLOW {
+    if execute.gas < VERYLOW {
         return Err(RunnerError::OutOfGas)
     }
     let result = execute.stack.swap(4);
@@ -60,7 +60,7 @@ pub fn swap4(execute: &mut Execute) -> Result<(), RunnerError> {
 }
 
 pub fn swap5(execute: &mut Execute) -> Result<(), RunnerError> {
-    if execute.gas > VERYLOW {
+    if execute.gas < VERYLOW {
         return Err(RunnerError::OutOfGas)
     }
     let result = execute.stack.swap(5);
@@ -74,7 +74,7 @@ pub fn swap5(execute: &mut Execute) -> Result<(), RunnerError> {
 }
 
 pub fn swap6(execute: &mut Execute) -> Result<(), RunnerError> {
-    if execute.gas > VERYLOW {
+    if execute.gas < VERYLOW {
         return Err(RunnerError::OutOfGas)
     }
     let result = execute.stack.swap(6);
@@ -88,7 +88,7 @@ pub fn swap6(execute: &mut Execute) -> Result<(), RunnerError> {
 }
 
 pub fn swap7(execute: &mut Execute) -> Result<(), RunnerError> {
-    if execute.gas > VERYLOW {
+    if execute.gas < VERYLOW {
         return Err(RunnerError::OutOfGas)
     }
     let result = execute.stack.swap(7);
@@ -102,7 +102,7 @@ pub fn swap7(execute: &mut Execute) -> Result<(), RunnerError> {
 }
 
 pub fn swap8(execute: &mut Execute) -> Result<(), RunnerError> {
-    if execute.gas > VERYLOW {
+    if execute.gas < VERYLOW {
         return Err(RunnerError::OutOfGas)
     }
     let result = execute.stack.swap(8);
@@ -115,7 +115,7 @@ pub fn swap8(execute: &mut Execute) -> Result<(), RunnerError> {
 }
 
 pub fn swap9(execute: &mut Execute) -> Result<(), RunnerError> {
-    if execute.gas > VERYLOW {
+    if execute.gas < VERYLOW {
         return Err(RunnerError::OutOfGas)
     }
     let result = execute.stack.swap(9);
@@ -128,7 +128,7 @@ pub fn swap9(execute: &mut Execute) -> Result<(), RunnerError> {
 }
 
 pub fn swap10(execute: &mut Execute) -> Result<(), RunnerError> {
-    if execute.gas > VERYLOW {
+    if execute.gas < VERYLOW {
         return Err(RunnerError::OutOfGas)
     }
     let result = execute.stack.swap(10);
@@ -141,7 +141,7 @@ pub fn swap10(execute: &mut Execute) -> Result<(), RunnerError> {
 }
 
 pub fn swap11(execute: &mut Execute) -> Result<(), RunnerError> {
-    if execute.gas > VERYLOW {
+    if execute.gas < VERYLOW {
         return Err(RunnerError::OutOfGas)
     }
     let result = execute.stack.swap(11);
@@ -154,7 +154,7 @@ pub fn swap11(execute: &mut Execute) -> Result<(), RunnerError> {
 }
 
 pub fn swap12(execute: &mut Execute) -> Result<(), RunnerError> {
-    if execute.gas > VERYLOW {
+    if execute.gas < VERYLOW {
         return Err(RunnerError::OutOfGas)
     }
     let result = execute.stack.swap(12);
@@ -167,7 +167,7 @@ pub fn swap12(execute: &mut Execute) -> Result<(), RunnerError> {
 }
 
 pub fn swap13(execute: &mut Execute) -> Result<(), RunnerError> {
-    if execute.gas > VERYLOW {
+    if execute.gas < VERYLOW {
         return Err(RunnerError::OutOfGas)
     }
     let result = execute.stack.swap(13);
@@ -180,7 +180,7 @@ pub fn swap13(execute: &mut Execute) -> Result<(), RunnerError> {
 }
 
 pub fn swap14(execute: &mut Execute) -> Result<(), RunnerError> {
-    if execute.gas > VERYLOW {
+    if execute.gas < VERYLOW {
         return Err(RunnerError::OutOfGas)
     }
     let result = execute.stack.swap(14);
@@ -193,7 +193,7 @@ pub fn swap14(execute: &mut Execute) -> Result<(), RunnerError> {
 }
 
 pub fn swap15(execute: &mut Execute) -> Result<(), RunnerError> {
-    if execute.gas > VERYLOW {
+    if execute.gas < VERYLOW {
         return Err(RunnerError::OutOfGas)
     }
     let result = execute.stack.swap(15);
@@ -206,7 +206,7 @@ pub fn swap15(execute: &mut Execute) -> Result<(), RunnerError> {
 }
 
 pub fn swap16(execute: &mut Execute) -> Result<(), RunnerError> {
-    if execute.gas > VERYLOW {
+    if execute.gas < VERYLOW {
         return Err(RunnerError::OutOfGas)
     }
     let result = execute.stack.swap(16);

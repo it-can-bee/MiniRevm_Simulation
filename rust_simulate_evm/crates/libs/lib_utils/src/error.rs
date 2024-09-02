@@ -4,6 +4,8 @@ pub enum RunnerError {
 
     // System errors
     OutOfGas,
+    StorageRetrievalFailed,
+    EmptyCode,
 
     // Account errors
     AccountNotFound,

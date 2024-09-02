@@ -1,4 +1,5 @@
 use lib_utils::error::RunnerError;
+use ethers::utils::keccak256;
 /* -------------------------------------------------------------------------- */
 /*                             AccountState struct                            */
 /* -------------------------------------------------------------------------- */
@@ -6,8 +7,7 @@ use lib_utils::error::RunnerError;
 pub struct AccountState {
     pub nonce: u64,
     pub balance: [u8; 32],
-    //账户的存储空间，用hashmap表示，键(存储槽位)和值都是32字节数组
-    pub storage: HashMap<[u8; 32], [u8; 32]>,
+    pub storage: HashMap<[u8; 32], [u8; 32]>,    //<slot, value>
     pub code_hash: [u8; 32],
 }
 
@@ -100,7 +100,7 @@ impl EvmState {
         }
 
         let value_u256 = U256::from_big_endian(&value);
-
+        // Check account
         let from_balance = U256::from_big_endian(
             &self
                 .accounts
@@ -141,12 +141,13 @@ impl EvmState {
         Ok(())
     }
 
-    // 读取以太坊账户的存储槽
+    // 从指定的slot读取存储值
     pub fn sload(&mut self, account: [u8; 20], slot: [u8; 32]) -> Result<[u8; 32], RunnerError> {
         //本地账户状态读取
         match self.accounts.get(&account) {
             Some(account_state) => match account_state.storage.get(&slot) {
                 Some(value) => Ok(*value),
+                // 存储槽为空
                 None => Ok([0u8; 32]),
             },
             //不在则去链上获取
@@ -165,25 +166,34 @@ impl EvmState {
                 // Block on the future and get the result
                 let storage_result = tokio::runtime::Runtime::new()
                     .expect("Could not create a Runtime")
+                    //获取远程节点上的存储数据
                     .block_on(future);
 
                 match storage_result {
                     Ok(storage) => {
                         let storage_bytes = storage.to_fixed_bytes();
 
-                        // Save the fetched storage data locally
-                        if let Some(account_state) = self.accounts.get_mut(&account) {
-                            account_state.storage.insert(slot, storage_bytes);
-                        }
+                        // 如果获取到的存储值是全0，存储槽为空
+                        if storage_bytes == [0u8; 32] {
+                            Ok([0u8; 32]) // 存储槽为空
+                        } else {
+                            // 保存从远程获取的存储数据到本地账户状态
+                            if let Some(account_state) = self.accounts.get_mut(&account) {
+                                account_state.storage.insert(slot, storage_bytes);
+                            }
 
-                        Ok(storage_bytes)
+                            Ok(storage_bytes) // 成功获取到非空存储槽值
+                        }
                     }
-                    Err(_) => Ok([0u8; 32]),
+                    Err(_) => {
+                        // 链上数据获取失败
+                        Err(RunnerError::StorageRetrievalFailed)
+                    }
                 }
             }
         }
     }
-    // 写入以太坊账户的存储槽
+    // 更新存储值到指定账户的slot
     pub fn sstore(
         &mut self,
         account: [u8; 20],
@@ -203,4 +213,125 @@ impl EvmState {
             None => Err(RunnerError::AccountNotFound),
         }
     }
+
+    /* -------------------------------------------------------------------------- */
+    /*                             Get/put account code                            */
+    /* -------------------------------------------------------------------------- */
+    pub fn get_code_at(&self, address: [u8; 20]) -> Option<&Vec<u8>> {
+        let account_state = self.accounts.get(&address);
+        let code = if let Some(_account_state) = account_state {
+            let code_hash = _account_state.code_hash;
+            self.get_code(code_hash)
+        } else {
+            None
+        };
+        code
+    }
+    //根据hash=>code的Vec<u8>
+    fn get_code(&self, code_hash: [u8; 32]) -> Option<&Vec<u8>> {
+        self.codes.get(&code_hash)
+    }
+
+    //将合约代码存储在特定的账户地址
+    pub fn put_code_at(&mut self, address: [u8; 20], code: Vec<u8>) -> Result<(), RunnerError> {
+        let code_hash = self.put_code(code)?;
+
+        match self.accounts.get_mut(&address) {
+            Some(account_state) => {
+                account_state.code_hash = code_hash.to_owned();
+                Ok(())
+            }
+            None => Err(RunnerError::AccountNotFound),
+        }
+    }
+    //code存储到EVM的codes哈希表
+    fn put_code(&mut self, code: Vec<u8>) -> Result<[u8; 32], RunnerError> {
+        // Check if static mode is enabled
+        if self.static_mode {
+            return Err(RunnerError::StaticCallStateChanged);
+        }
+
+        if code.is_empty() {
+            return Err(RunnerError::EmptyCode);
+        }
+
+        let code_hash = keccak256(&code);
+        self.codes.insert(code_hash, code);
+        Ok(code_hash)
+    }
+
+    //打印EVM当前状态
+    pub fn debug_state(&mut self) {
+        let border_line =
+            "╔═══════════════════════════════════════════════════════════════════════════════════════════════════════╗";
+        let footer_line =
+            "╚═══════════════════════════════════════════════════════════════════════════════════════════════════════╝";
+        let separator_line =
+            "╟───────────────────────────────────────────────────────────────────────────────────────────────────────╢";
+
+        // Print out the storage header
+        println!("\n{}", border_line.green());
+        println!(
+            "║ {:<101} ║",
+            "Final EVM State".yellow().bold()
+        );
+        println!("{}", footer_line.green());
+
+        // Create a vector of all addresses
+        let addresses: Vec<_> = self.accounts.keys().cloned().collect();
+
+        // Iterate over the vector of addresses
+        for address in addresses {
+            println!("{}", separator_line.green());
+
+            // Print Address
+            let hex_address: String = debug::to_hex_address(address.to_owned());
+            println!("║ {}: {:<92} ║", "Address".cyan(), hex_address.blue());
+
+            let account_state = &self.accounts[&address];
+
+            // Print Nonce
+            println!("║ {}: {:<100} ║", "Nonce".magenta(), account_state.nonce);
+
+            // Print Balance
+            let balance = U256::from(account_state.balance).to_string();
+            println!("║ {}: {:<100} ║", "Balance".magenta(), balance.green());
+
+            // Print Code Hash
+            let code_hash = debug::to_hex_string(account_state.code_hash);
+            let code_status = if account_state.code_hash == [0u8; 32] {
+                "Empty code".red().to_string()
+            } else {
+                code_hash.yellow().to_string()
+            };
+            println!("║ {}: {:<100} ║", "Code Hash".magenta(), code_status);
+
+            // Print Storage
+            println!("║ {}: {:<100} ║", "Storage".magenta(), "");
+            if account_state.storage.is_empty() {
+                println!("║    {}: {:<96} ║", "Empty storage".red(), "");
+            } else {
+                for (slot, value) in &account_state.storage {
+                    let slot_hex = debug::to_hex_string(slot.to_owned());
+                    let value_hex = debug::to_hex_string(value.to_owned());
+                    println!("║    {}: {:<88} ║", "Slot".bright_blue(), slot_hex);
+                    println!("║    {}: {:<88} ║", "Value".blue(), value_hex);
+                }
+            }
+
+            // If code exists, print the code
+            if account_state.code_hash != [0u8; 32] {
+                let code = self.get_code_at(address.to_owned()).unwrap();
+                let code_hex = debug::vec_to_hex_string(code.to_owned());
+                println!("║ {}: {:<100} ║", "Code".magenta(), code_hex);
+            }
+        }
+
+        // Footer or message if state is empty
+        if self.accounts.is_empty() {
+            println!("║ {:<101} ║", "Empty EVM state".red());
+        }
+        println!("{}", footer_line.green());
+    }
+
 }

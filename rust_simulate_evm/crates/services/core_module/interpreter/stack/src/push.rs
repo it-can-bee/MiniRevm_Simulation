@@ -13,7 +13,7 @@ fn prepare_data(data: &[u8]) -> [u8; 32] {
 
 //从字节码中提取数据，并将其正确地放入栈中 数据32字节空间内右对齐
 pub fn push(execute: &mut Execute, data_len: usize) -> Result<(), RunnerError> {
-    if execute.gas > VERYLOW {
+    if execute.gas < VERYLOW {
         return Err(RunnerError::OutOfGas)
     }
     if execute.pc + 1 + data_len > execute.bytecode.len() {

@@ -10,7 +10,7 @@ pub fn log0(execute: &mut Execute) -> Result<(), RunnerError> {
     if execute.state.static_mode {
         return Err(RunnerError::StaticCallStateChanged);
     }
-    if execute.gas > VERYLOW_LOG0 {
+    if execute.gas < VERYLOW_LOG0 {
         return Err(RunnerError::OutOfGas)
     }
 
@@ -36,7 +36,7 @@ pub fn log1(execute: &mut Execute) -> Result<(), RunnerError> {
     if execute.state.static_mode {
         return Err(RunnerError::StaticCallStateChanged);
     }
-    if execute.gas > VERYLOW_LOG1 {
+    if execute.gas < VERYLOW_LOG1 {
         return Err(RunnerError::OutOfGas)
     }
 
@@ -66,7 +66,7 @@ pub fn log2(execute: &mut Execute) -> Result<(), RunnerError> {
     if execute.state.static_mode {
         return Err(RunnerError::StaticCallStateChanged);
     }
-    if execute.gas > VERYLOW_LOG2 {
+    if execute.gas < VERYLOW_LOG2 {
         return Err(RunnerError::OutOfGas)
     }
 
@@ -100,7 +100,7 @@ pub fn log3(execute: &mut Execute) -> Result<(), RunnerError> {
     if execute.state.static_mode {
         return Err(RunnerError::StaticCallStateChanged);
     }
-    if execute.gas > VERYLOW_LOG3 {
+    if execute.gas < VERYLOW_LOG3 {
         return Err(RunnerError::OutOfGas)
     }
 
@@ -138,7 +138,7 @@ pub fn log4(execute: &mut Execute) -> Result<(), RunnerError> {
     if execute.state.static_mode {
         return Err(RunnerError::StaticCallStateChanged);
     }
-    if execute.gas > VERYLOW_LOG4 {
+    if execute.gas < VERYLOW_LOG4 {
         return Err(RunnerError::OutOfGas)
     }
 
