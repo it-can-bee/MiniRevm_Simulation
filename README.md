@@ -12,6 +12,18 @@ This project is currently experimental and subject to frequent changes as we are
 - EVM concurrent exec
 - EVM instructor concurrent exec
 
+## Structure
+
+- "crates/libs/lib_core",  # 核心库 binary
+- "crates/libs/lib_utils",  # 工具库 binary
+- "crates/services/*", # 应用层 application
+  - opcode
+  - stack
+  - memory
+  - storage
+  - log
+  - execute
+
 ## Contributions
 
 To contribute to the EVM Rust Emulator, you will need to have Rust and Cargo installed on your system. 
