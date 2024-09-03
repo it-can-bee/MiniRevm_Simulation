@@ -16,6 +16,7 @@ pub struct Execute {
     //data
     pub stack:Stack,
     pub memory: Memory,
+    pub returndata: Memory,
     pub state: EvmState,
 }
 
@@ -28,6 +29,7 @@ impl Execute {
             address: [0u8; 20],
             stack: Stack::new(),
             memory: Memory::new(None),
+            returndata: Memory::new(None),
             state: EvmState::new(None),
         }
     }
@@ -35,5 +37,13 @@ impl Execute {
     pub fn increase_pc(&mut self, size:usize) -> Result<(), RunnerError> {
         self.pc += size;
         Ok(())
+    }
+
+    pub fn get_pc(&self) -> usize {
+        self.pc
+    }
+
+    pub fn set_pc(&mut self, pc: usize) {
+        self.pc = pc;
     }
 }
