@@ -6,9 +6,10 @@ edition = "2021"
 [dependencies]
 ethers = "2.0.7"
 colored = "2.0.4"
-bytes = "1.7.1"
+#bytes = "1.7.1"
 
 tokio = { version = "1", features = ["full"] }
 
 lib_utils = { path = "../../../libs/lib_utils" }
 lib_core = { path = "../../../libs/lib_core" }
+context = { path = "../interpreter/context" }

@@ -4,3 +4,5 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+primitive-types = "0.12.1"
+alloy-primitives = "0.6.2"

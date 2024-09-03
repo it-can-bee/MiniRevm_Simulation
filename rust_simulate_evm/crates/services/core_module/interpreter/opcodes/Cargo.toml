@@ -6,6 +6,8 @@ edition = "2021"
 [dependencies]
 ethers = "2.0.7"
 colored = "2.0.4"
+revm-primitives = "2.0.0"
+
 lib_utils = { path = "../../../../libs/lib_utils" }
 interpreter_execute = { path = "../../interpreter_execute" }
 gas = { path = "../gas" }
