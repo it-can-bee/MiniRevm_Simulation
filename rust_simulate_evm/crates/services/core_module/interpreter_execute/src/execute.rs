@@ -2,10 +2,12 @@ use colored::Colorize;
 use lib_utils::error::RunnerError;
 use lib_core::debug;
 use context::evm_context::EvmContext;
+use opcodes::*;
 
 use crate::stack::Stack;
 use crate::memory::Memory;
 use crate::storage::EvmState;
+
 use crate::enviroment::*;
 use crate::assembly::*;
 
@@ -264,97 +266,86 @@ impl Execute {
         Ok(())
     }
 
-    // 创建 call_inner 函数用于处理 CALL 和 CALLCODE 操作码的内部调用逻辑
-    // pub fn call_inner(
-    //     &mut self,
-    //     to: [u8; 20],
-    //     value: [u8; 32],
-    //     calldata: Vec<u8>,
-    //     _gas: u64,
-    //     is_callcode: bool, // 用于区分 CALL 和 CALLCODE
-    // ) -> Result<(), RunnerError> {
-    //     let mut error: Option<RunnerError> = None;
-    //
-    //     // 存储初始状态
-    //     let initial_caller = self.caller.clone();
-    //     let initial_callvalue = self.callvalue.clone();
-    //     let initial_address = self.address.clone();
-    //     let initial_calldata = self.calldata.clone();
-    //     let initial_returndata = self.returndata.clone();
-    //     let initial_memory = self.memory.clone();
-    //     let initial_stack = self.stack.clone();
-    //     let initial_pc = self.pc.clone();
-    //     let initial_bytecode = self.bytecode.clone();
-    //
-    //     // 状态更新和环境设置
-    //     if !is_callcode {
-    //         self.caller = self.address.clone();
-    //         self.callvalue = value;
-    //         self.address = to;
-    //     }
-    //
-    //     self.call_depth += 1;
-    //     self.calldata = Memory::new(Some(calldata));
-    //     self.returndata = Memory::new(None);
-    //
-    //     if is_callcode {
-    //         self.memory = initial_memory.clone(); // CALLCODE 保留内存
-    //     } else {
-    //         self.memory = Memory::new(None);
-    //     }
-    //
-    //     self.stack = Stack::new();
-    //     self.pc = 0;
-    //
-    //     // 重新加载和执行字节码
-    //     let mut code = self.state.get_code_at(to);
-    //
-    //     if code.is_some() {
-    //         let interpret_result = self.interpret(code.unwrap().to_owned(), false);
-    //         if interpret_result.is_err() {
-    //             error = Some(interpret_result.unwrap_err());
-    //         }
-    //     }
-    //
-    //     // 获取返回数据
-    //     let return_data = self.returndata.heap.clone();
-    //
-    //     // 恢复初始状态
-    //     if !is_callcode {
-    //         self.caller = initial_caller;
-    //         self.callvalue = initial_callvalue;
-    //         self.address = initial_address;
-    //     }
-    //     self.calldata = initial_calldata;
-    //     self.returndata = initial_returndata;
-    //     self.memory = initial_memory;
-    //     self.stack = initial_stack;
-    //     self.pc = initial_pc;
-    //     self.bytecode = initial_bytecode;
-    //     self.call_depth -= 1;
-    //
-    //     // 将返回数据写回初始状态
-    //     self.returndata.heap = return_data;
-    //
-    //     // 增加调用者的 nonce
-    //     increment_nonce(self.address, self)?;
-    //
-    //     if error.is_some() {
-    //         return Err(error.unwrap());
-    //     }
-    //
-    //     // 返回 Ok
-    //     Ok(())
-    // }
-
-
     /*==============解析器==================*/
     pub fn interpret(
         &mut self,
         bytecode: Vec<u8>,
         initial_interpretation: bool,
     ) -> Result<(), RunnerError> {
+        self.bytecode = bytecode;
 
+        if initial_interpretation {
+            // Set the runner address code
+            let put_code_result = self.state.put_code_at(self.address, self.bytecode.clone());
+            if put_code_result.is_err() {
+                return Err(put_code_result.unwrap_err());
+            }
+        }
+
+        /* -------------------------------------------------------------------------- */
+        /*                             Interpret bytecode                             */
+        /* -------------------------------------------------------------------------- */
+        let mut error: Option<RunnerError> = None;
+        if self.bytecode.is_empty() {
+            println!("{}: {}", "ERROR: ".red(), "EmptyByteCode");
+            return Err(RunnerError::EmptyByteCode);
+        }
+
+        let mut op_list = Vec::new();
+        // Interpret the bytecode
+        while self.pc < self.bytecode.len() {
+            let mut op_count = self.op_count;
+            let mut flag = [0u8; 30];
+            for i in 1..30 {
+                if self.call_depth.eq(&i) && flag[i as usize] == 0 {
+                    flag[i as usize] = 1;
+                    op_count += i as u128;
+                }
+            }
+
+            // Interpret an opcode
+            op_list.push(get_op_code(self.bytecode[self.pc]));
+
+            let my_opcode = get_op_code(self.bytecode[self.pc]).to_string();
+            /*=======================逐条处理操作码 (Opcode Execution)=========================*/
+            //负责根据提供的操作码调用相应的处理函数
+            //每种操作码对应一个具体的函数，这些函数定义在op_codes模块
+            let result = self.interpret_op_code(self.bytecode[self.pc]);
+            if result.is_err() {
+                error = Some(result.unwrap_err());
+                break;
+            }
+            self.op_count += 1;
+        }
+        /* -------------------------------------------------------------------------- */
+        /*                            Print execution error                           */
+        /* -------------------------------------------------------------------------- */
+
+        if error.is_some() {
+            println!(
+                "{} {}\n  {}: 0x{:X}\n  {}: 0x{:X}\n  {}\n op_count: {}",
+                "ERROR:".red(),
+                "Runtime error".red(),
+                "PC".yellow(),
+                self.pc,
+                "OpCode".yellow(),
+                self.bytecode[self.pc],
+                //error.as_ref().unwrap().to_string().red()
+                format!("{:?}", error.as_ref().unwrap()),
+                self.op_count
+            );
+
+            return Err(error.unwrap());
+        }
+
+        Ok(())
+    }
+
+    /* 轮询执行每个opcode */
+    pub fn interpret_op_code(&mut self, opcode: u8) -> Result<(), RunnerError> {
+        match opcode {
+            0x00 => opcodes::flow::stop(self),
+        }
         Ok(())
     }
 

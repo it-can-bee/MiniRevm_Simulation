@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="EMPTY_MODULE" version="4">
+  <component name="NewModuleRootManager">
+    <content url="file://$MODULE_DIR$">
+      <sourceFolder url="file://$MODULE_DIR$/rust_simulate_evm/crates/libs/lib_core/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/rust_simulate_evm/crates/libs/lib_utils/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/rust_simulate_evm/crates/services/core_module/interpreter/context/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/rust_simulate_evm/crates/services/core_module/interpreter/gas/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/rust_simulate_evm/crates/services/core_module/interpreter/opcodes/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/rust_simulate_evm/crates/services/core_module/interpreter/stack/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/rust_simulate_evm/crates/services/core_module/interpreter_execute/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/rust_simulate_evm/src" isTestSource="false" />
+      <excludeFolder url="file://$MODULE_DIR$/rust_simulate_evm/target" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+  </component>
+</module>
